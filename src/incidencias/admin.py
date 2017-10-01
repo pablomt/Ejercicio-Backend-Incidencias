@@ -22,6 +22,7 @@ class AreaAdmin(admin.ModelAdmin):
     search_fields = ('nombre', 'catalogo__nombre',)
     list_display = ('id', 'nombre', 'catalogo',)
     ordering = ['id', 'nombre', 'catalogo__nombre']
+    list_filter = ('catalogo__nombre',)
 
 
 # Administrador para el modelo de Item
@@ -31,7 +32,7 @@ class ItemAdmin(admin.ModelAdmin):
     search_fields = ('nombre', 'area__nombre',)
     list_display = ('id', 'nombre', 'area',)
     ordering = ['id', 'nombre', 'area__nombre']
-
+    list_filter = ('area__nombre',)
 
 
 # Se dan de alta las vistas para administrador de los distintos modelos.
