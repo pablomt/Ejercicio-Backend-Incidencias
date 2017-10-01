@@ -1,10 +1,8 @@
 # Custom gitignore
-
 bin/
 include/
 pip-selfcheck.json
 .idea/
-
 .DS_Store
 
 
