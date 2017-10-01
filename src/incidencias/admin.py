@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Catalogo, Area, Item
+from .models import Catalogo, Area, Item, Incidencia
 
 
 # Register your models here.
@@ -40,3 +40,4 @@ class ItemAdmin(admin.ModelAdmin):
 admin.site.register(Catalogo, CatalogoAdmin)
 admin.site.register(Area, AreaAdmin)
 admin.site.register(Item, ItemAdmin)
+admin.site.register(Incidencia)

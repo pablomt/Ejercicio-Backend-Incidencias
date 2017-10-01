@@ -38,7 +38,7 @@ class Catalogo(models.Model):
 class Area(models.Model):
     # la pk(id) se crea por default
     # El campo nombre y catalogo no pueden ser null, El campo nombre es unico
-    nombre = models.CharField(verbose_name="Área", max_length=100, db_index=True,)
+    nombre = models.CharField(verbose_name="Área", max_length=100, db_index=True, )
     catalogo = models.ForeignKey(Catalogo, verbose_name="Catalogo")
 
     class Meta:
@@ -73,6 +73,34 @@ class Item(models.Model):
         verbose_name = "Item"
         verbose_name_plural = "Items"
         unique_together = ("nombre", "area")
+
+    def __str__(self):
+        return self.nombre
+
+    def __unicode__(self):  # For Python 2
+        return self.nombre
+
+    def to_serializable_dict(self):
+        ans = model_to_dict(self)
+        ans['id'] = str(self.id)
+        ans['nombre'] = self.nombre
+        return ans
+
+
+# *********************************************************************
+#           Incidencia : Modelo para todas las incidencias
+# *********************************************************************
+
+class Incidencia(models.Model):
+    # la pk(id) se crea por default
+    # Se agregan dos nuevos campos a los requisitos: fecha_actualizacion y facha de cracion para futuros usos
+    item = models.ForeignKey(Item, verbose_name="Item")
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Incidencia"
+        verbose_name_plural = "Incidencias"
 
     def __str__(self):
         return self.nombre
