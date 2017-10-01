@@ -1,6 +1,7 @@
 # Custom gitignore
 bin/
 include/
+src/incidencias/migrations
 pip-selfcheck.json
 .idea/
 .DS_Store
