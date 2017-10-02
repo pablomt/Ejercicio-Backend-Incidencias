@@ -33,10 +33,10 @@ class Buscador:
             query = query & Q(item__area__catalogo__id__in=self.catalogos)
 
         if (self.areas is not None):
-            query = query & Q(item__area__id__in=self.alineaciones)
+            query = query & Q(item__area__id__in=self.areas)
 
         if (self.items is not None):
-            query = query & Q(item__id__in=self.temas)
+            query = query & Q(item__id__in=self.items)
 
         if self.rango_de_fecha_creacion_desde is not None:
             query_date = datetime.datetime.strptime(self.rango_de_fecha_creacion_desde, Constantes.FORMATO_FECHA).date()
@@ -46,11 +46,6 @@ class Buscador:
             query_date = datetime.datetime.strptime(self.rango_de_fecha_creacion_hasta, Constantes.FORMATO_FECHA).date()
             query = query & Q(fecha_creacion__lte=query_date)
 
-        if query is not None:
-            print(query)
-            compromisos = Incidencia.objects.filter(query)
-        else:
-            print("Query is empty")
-            compromisos = Incidencia.objects.all()
+        compromisos = Incidencia.objects.filter(query)
 
         return compromisos

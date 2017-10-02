@@ -12,7 +12,7 @@ from datetime import date, timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Imports provenientes del modelo de compromisos.
-from incidencias.models import Catalogo, Area, Item
+from incidencias.models import Catalogo, Area, Item, Incidencia
 
 # Utilidades propias a utilizar dentro del API.
 from sistemaIncidencias.utilities.utilities import Utilities
@@ -34,7 +34,56 @@ def get_array_or_none(the_string):
     if the_string is None:
         return None
     else:
-        return map(int, the_string.split(','))
+        return list(map(int, the_string.split(',')))
+
+
+def get_incidencias_por_catalogo_area(incidencias_set=None, areas_array=None):
+    '''
+        Obtiene reporte para un posible dashboard general basado en las incidencias, contiene la siguiente estrucutura:
+        incidencias_por_catalogo_area [{id_catalogo, nombre_catalogo, tema, num_insidencias [{id_area, nombre_area,
+        num_area,}]}]
+    '''
+    reporte = []
+    catalogo_set = Catalogo.objects.filter(id=2).order_by('id')
+
+    if areas_array is None:
+        areas_set = Area.objects.all().order_by('id')
+    else:
+        areas_set = Area.objects.filter(Q(id__in=areas_array))
+
+    for catalogo in catalogo_set:
+        registro = {
+            "id_catalogo": catalogo.id,
+            "nombre_catalogo": catalogo.nombre,
+            "areas": [],
+            "num_insidencias_por_catalogo": 0
+        }
+        for area in areas_set:
+            if incidencias_set is None:
+                incidencias_filtradas = Incidencia.objects.filter(Q(item__area__catalogo__id=catalogo.id),
+                                                                  Q(item__area__id=area.id))
+            else:
+                incidencias_filtradas = incidencias_set.filter(Q(item__area__catalogo__id=catalogo.id),
+                                                               Q(item__area__id=area.id))
+
+            incidencias_set_areas = incidencias_filtradas.values('item__area__catalogo__id',
+                                                                 'item__area__catalogo__nombre',
+                                                                 'item__area__id').annotate(
+                num_incidencias=Count('item__area'))
+            registro_area = {
+                "id_area": area.id,
+                "nombre_area": area.nombre,
+                "num_incidencias": 0,
+            }
+
+            for incidencias in incidencias_set_areas:
+                registro_area['num_incidencias'] = incidencias['num_incidencias']
+                registro["num_insidencias_por_catalogo"] = registro["num_insidencias_por_catalogo"] + incidencias[
+                    'num_incidencias']
+            registro['areas'].append(registro_area)
+        reporte.append(registro)
+        print(reporte)
+    return reporte
 
 
 '''
@@ -79,4 +128,21 @@ class ItemsPorAreaEndpoint(LoginRequiredMixin, ListView):
 
 class BuscadorIncidencias(LoginRequiredMixin, ListView):
     def get(self, request, **kwargs):
-        return  #
+        response = {}
+        buscador = Buscador(
+            catalogos=get_array_or_none(request.GET.get('catalogos')),
+            areas=get_array_or_none(request.GET.get('areas')),
+            items=get_array_or_none(request.GET.get('items')),
+
+            # Parámetros con comportamiento de rangos.
+            rango_de_fecha_creacion_desde=request.GET.get('rango_de_fecha_creacion_desde'),
+            rango_de_fecha_creacion_hasta=request.GET.get('rango_de_fecha_creacion_hasta'),
+        )
+        incidencias = buscador.buscar()
+
+        # Reporte 1: obtener incidencias por area
+        # Obtiene las incidencias agrupados por catalogo y por areas.
+        response["indicencias_por_area"] = get_incidencias_por_catalogo_area(incidencias, get_array_or_none(
+            request.GET.get('areas')))
+
+        return HttpResponse(Utilities.json_to_dumps(response), 'application/json; charset=utf-8')
