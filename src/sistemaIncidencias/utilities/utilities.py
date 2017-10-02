@@ -1,5 +1,6 @@
 # coding=utf-8
 import json
+from django.core import serializers
 import copy
 
 from decimal import Decimal
@@ -10,7 +11,8 @@ class Utilities():
     # Toma un queryset, lo vuelve serializable y lo serializa para poder devolverlo al cliente.
     @staticmethod
     def query_set_to_dumps(query_set_object):
-        return json.dumps(map(lambda model_object: model_object.to_serializable_dict(), query_set_object),
+        print(map(lambda model_object: model_object.to_serializable_dict(), query_set_object))
+        return json.dumps(list(map(lambda model_object: model_object.to_serializable_dict(), query_set_object)),
                           indent=4, separators=(',', ': '), sort_keys=False, ensure_ascii=False
                           )
 
