@@ -5,6 +5,7 @@ src/incidencias/migrations
 pip-selfcheck.json
 .idea/
 .DS_Store
+lib/python3.6
 
 
 # Byte-compiled / optimized / DLL files
