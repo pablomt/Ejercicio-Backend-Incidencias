@@ -2,7 +2,6 @@
 
 .DS_Store
 sistemaIncidencias/settings/local.py
-incidencias/migrations
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -38,11 +38,12 @@ class ItemAdmin(admin.ModelAdmin):
 # Administrador para el modelo de Item
 class IncidenciaAdmin(admin.ModelAdmin):
     model = Incidencia
-    fields = ('item',)
-    list_display = ('id', 'item', 'get_area', 'get_catalogo')
+    fields = ('item', 'fecha_creacion',)
+    list_display = ('id', 'item', 'get_area', 'get_catalogo', 'fecha_creacion', 'fecha_actualizacion')
     search_fields = ('item__nombre', 'item__area__nombre',)
     ordering = ['id', 'item__nombre', 'item__area__nombre']
     list_filter = ('item__area__catalogo',)
+    list_display_links = ('id', 'item')
 
     def get_area(self, obj):
         return str(obj.item.area.nombre)

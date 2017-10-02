@@ -95,8 +95,8 @@ class Incidencia(models.Model):
     # la pk(id) se crea por default
     # Se agregan dos nuevos campos a los requisitos: fecha_actualizacion y facha de cracion para futuros usos
     item = models.ForeignKey(Item, verbose_name="Item")
-    fecha_actualizacion = models.DateTimeField(auto_now=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField() # auto_now=True
+    fecha_creacion = models.DateTimeField()# auto_now_add=True
 
     class Meta:
         verbose_name = "Incidencia"
