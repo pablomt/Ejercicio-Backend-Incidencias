@@ -103,13 +103,13 @@ class Incidencia(models.Model):
         verbose_name_plural = "Incidencias"
 
     def __str__(self):
-        return self.nombre
+        return self.item.nombre
 
     def __unicode__(self):  # For Python 2
-        return self.nombre
+        return self.item.nombre
 
     def to_serializable_dict(self):
         ans = model_to_dict(self)
         ans['id'] = str(self.id)
-        ans['nombre'] = self.nombre
+        ans['item'] = self.item.nombre
         return ans

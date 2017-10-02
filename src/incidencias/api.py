@@ -8,6 +8,9 @@ from django.db.models import Q
 from django.db.models.aggregates import Sum, Count
 from datetime import date, timedelta
 
+# Este import se utilizara en la api para forzar al usuario a estar logeado para consumir las apis.
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 # Imports provenientes del modelo de compromisos.
 from incidencias.models import Catalogo, Area, Item
 
@@ -40,15 +43,15 @@ def get_array_or_none(the_string):
 
 
 # endpoint para devolver determinado modelo en formato JSON. La url es /incidencias/api/"modelo"
-class ModelosEndpoint(ListView):
+class ModelosEndpoint(LoginRequiredMixin, ListView):
     def get(self, request, modelo):
         return HttpResponse(Utilities.query_set_to_dumps(modelo.objects.all().order_by('nombre')),
                             'application/json')
 
 
 # endpoint que regresa todas las areas dependiendo una categoria.
-# La url es /incidencias/api/get-area-por-catalogo?catalogo_id=1
-class AreasPorCategoriaEndpoint(ListView):
+# La url es /incidencias/api/get-areas-por-catalogo?catalogo_id=1
+class AreasPorCategoriaEndpoint(LoginRequiredMixin, ListView):
     def get(self, request, **kwargs):
         catalogo = request.GET.get('catalogo_id')
         areas = Area.objects.filter(catalogo=catalogo).order_by('nombre')
@@ -67,13 +70,13 @@ class AreasPorCategoriaEndpoint(ListView):
 
 # Endpoint que regresa todos los items dependiente una area.
 # URL incidencias/api/get-items-por-area?area_id=1
-class ItemsPorAreaEndpoint(ListView):
+class ItemsPorAreaEndpoint(LoginRequiredMixin, ListView):
     def get(self, request, **kwargs):
         area = request.GET.get('area_id')
         items = Item.objects.filter(area__id=area)
         return HttpResponse(Utilities.query_set_to_dumps(items), 'application/json')
 
 
-class BuscadorIncidencias(ListView):
+class BuscadorIncidencias(LoginRequiredMixin, ListView):
     def get(self, request, **kwargs):
         return  #
